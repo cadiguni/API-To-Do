@@ -1,0 +1,22 @@
+#Extensions to VSCODE
+
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension bbenoist.vagrant
+code --install-extension hashicorp.terraform
+code --install-extension gruntfuggly.todo-tree
+code --install-extension eamodio.gitlens
+code --install-extension zhuangtongfa.material-theme
+code --install-extension streetsidesoftware.code-spell-checker
+code --install-extension christian-kohler.path-intellisense
+code --install-extension pkief.material-icon-theme
+code --install-extension ms-dotnettools.csdevkit
+code --install-extension ritwickdey.liveserver
+code --install-extension ms-vscode-remote.remote-wsl
+code --install-extension chouzz.vscode-better-align
+code --install-extension ms-azure-devops.azure-pipelines
+code --install-extension ms-vscode.azure-repos
+code --install-extension ms-vscode-remote.remote-containers
+code --install-extension github.remotehub
+code --install-extension redhat.vscode-yaml
+code --install-extension docker.docker
+code --install-extension cardinal90.multi-cursor-case-preserve
