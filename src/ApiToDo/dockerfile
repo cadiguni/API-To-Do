@@ -1,13 +1,21 @@
-# Dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
+# Etapa 1: build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
-FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+
+# Copia os arquivos do projeto
+COPY . ./
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
+
+# Etapa 2: runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Copia a build final da etapa anterior
+COPY --from=build /app/out ./
+
+# Expõe a porta 80
+EXPOSE 80
+
+# Comando para rodar a aplicação
 ENTRYPOINT ["dotnet", "ApiToDo.dll"]
