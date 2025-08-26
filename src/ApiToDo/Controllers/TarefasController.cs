@@ -7,7 +7,7 @@ namespace ApiToDo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "user,admin")]
 public class TarefasController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -50,6 +50,7 @@ public class TarefasController : ControllerBase
         return Ok(tarefa);
     }
 
+    [Authorize(Roles = "admin")]
     [HttpDelete("{id}")]
     public IActionResult Deletar(int id)
     {

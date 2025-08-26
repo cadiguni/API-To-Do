@@ -7,22 +7,25 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add DB context
+// DB
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
-// Add JWT Authentication
+// Token service
+builder.Services.AddScoped<TokenService>();
+
+// JWT Auth
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
-builder.Services.AddAuthentication(opt =>
+builder.Services.AddAuthentication(options =>
 {
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(opt =>
+.AddJwtBearer(options =>
 {
-    opt.RequireHttpsMetadata = false;
-    opt.SaveToken = true;
-    opt.TokenValidationParameters = new TokenValidationParameters
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -32,21 +35,18 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "API ToDo", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "API To-Do", Version = "v1" });
 
-    // Configuração do botão Authorize
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "Insira o token JWT no campo abaixo. Exemplo: Bearer {seu token}",
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Digite 'Bearer' [espaço] e o token JWT."
     });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -66,9 +66,15 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+builder.Services.AddAuthorization(); // roles funcionam por padrão
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-// Middlewares
+// Swagger (dev)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
